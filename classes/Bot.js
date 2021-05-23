@@ -305,6 +305,7 @@ Bot.prototype.initUser = function (options, callback) {
     self.Friends.on('debug', function () {
         self.emit('debug', ...arguments);
     });
+
     self.Trade = new Trade(self.TradeOfferManager, self.Auth, self.Tasks, self.settings);
     self.Trade.on('error', function () {
         self.emit('error', ...arguments);
@@ -312,14 +313,13 @@ Bot.prototype.initUser = function (options, callback) {
     self.Trade.on('debug', function () {
         self.emit('debug', ...arguments);
     });
+
     self.Community = new Community(self.community, self.Auth);
-
-
     self.errorCommunity = function () {
         self.emit('error', ...arguments);
     };
-    self.Community.removeListener('error', self.errorCommunity);
     self.Community.on('error', self.errorCommunity);
+    self.Community.removeListener('error', self.errorCommunity);
 
     self.debugCommunity = function () {
         self.emit('debug', ...arguments);
@@ -342,7 +342,6 @@ Bot.prototype.getAccountName = function () {
     return self.username;
 };
 
-
 /**
  * Set the user we are chatting with
  * @param {*|{username: *, sid: *}} chattingUserInfo
@@ -352,7 +351,6 @@ Bot.prototype.setChatting = function (chattingUserInfo) {
     self.currentChatting = chattingUserInfo;
 };
 
-
 /**
  * Fetch SteamID Object from the Individual Account ID (i.e 46143802)
  * @returns {Error | String}
@@ -360,7 +358,6 @@ Bot.prototype.setChatting = function (chattingUserInfo) {
 Bot.prototype.getUserFromAccountID = function (id) {
     return SteamID.fromIndividualAccountID(id);
 };
-
 
 /**
  * This method simply destroys this instance of the object and recreates it. (Get rid of all data)
@@ -387,7 +384,6 @@ Bot.prototype.fromIndividualAccountID = function (id) {
 Bot.prototype.getUser = function (steamid) {
     return new SteamID(steamid);
 };
-
 
 /**
  * Get the display name of the account
@@ -449,6 +445,7 @@ Bot.prototype.getUserInventory = function (steamID, appid, contextid, tradableOn
     else
         self.Trade.getUserInventory(steamID, appid, contextid, tradableOnly, inventoryCallback);
 };
+
 /**
  * Add a phone-number to the account (For example before setting up 2-factor authentication)
  * @param phoneNumber - Certain format must be followed
@@ -460,7 +457,6 @@ Bot.prototype.addPhoneNumber = function (phoneNumber, callbackErrorOnly) {
         callbackErrorOnly(err);
     });
 };
-
 
 /**
  * Enter the code to verify the phone number.
