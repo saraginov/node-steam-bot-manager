@@ -60,13 +60,13 @@ function Bot(username, password, details, settings) {
     self.freshLogin = true;
     self.Auth = new Auth(details);
     self.Auth.setSettings(settings);
+
     self.Auth.on('error', function () {
         self.emit('error', ...arguments);
     });
     self.Auth.on('debug', function () {
         self.emit('debug', ...arguments);
     });
-
     self.Auth.on('updatedAccountDetails', function (accountDetails) {
         self.emit('updatedAccountDetails', accountDetails);
     });
@@ -77,17 +77,12 @@ function Bot(username, password, details, settings) {
         })
     });
 
-
-
-
     if (self.settings.autologin == true)
         self.initUser(function (err) {
             self.Auth.loginAccount();
         });
 
-
     // Events Listeners
-
     self.sentOfferChanged = function (offer, oldState) {
         /**
          * Emitted when a trade offer changes state (Ex. accepted, pending, escrow, etc...)
@@ -191,8 +186,6 @@ function Bot(username, password, details, settings) {
          */
         self.emit('sentOfferCanceled', offer);
     };
-
-
 }
 
 /**
@@ -222,22 +215,20 @@ Bot.prototype.initUser = function (options, callback) {
         callback = options;
         options = {};
     }
-    let allOpts = {};
 
+    let allOpts = {};
     let requestOptions = {};
+
     if (options.hasOwnProperty("request")) {
         requestOptions = options.request;
         allOpts.request =  request.defaults(requestOptions);
     }
-
-
 
     self.community = new SteamCommunity(allOpts);
 
     self.client = new SteamUser({
         promptSteamGuardCode: false,
     });
-
 
     self.TradeOfferManager = new TradeOfferManager({
         "steam": self.client,
@@ -249,6 +240,7 @@ Bot.prototype.initUser = function (options, callback) {
         "language": options.hasOwnProperty("language") ? options.language : self.settings.language, // We want English item descriptions
         "pollInterval": options.hasOwnProperty("tradePollInterval") ? options.tradePollInterval : self.settings.tradePollInterval // We want to poll every 5 seconds since we don't have Steam notifying us of offers
     });
+
     self.request = self.community.request;
     self.store = new SteamStore();
     self.Auth.initAuth(self.community, self.store, self.client);
@@ -263,7 +255,10 @@ Bot.prototype.initUser = function (options, callback) {
     // });
 
     self.Request = new Request(self.request);
+
     self.Request.on('error', function () {
+        // where are arguments coming from?, should they not be in returned in
+        // listener? as an actual arg? i.e. function (args)
         self.emit('error', ...arguments);
     });
     self.Request.on('debug', function () {
@@ -337,6 +332,7 @@ Bot.prototype.initUser = function (options, callback) {
         return callback();
     }
 };
+
 /**
  * Get the account's username, used to login to Steam
  * @returns {String} username

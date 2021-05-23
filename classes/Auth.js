@@ -297,4 +297,5 @@ Auth.prototype.getTime = function (timeOffset) {
 Auth.prototype.getTimeOffset = function (callback) {
     SteamTotp.getTimeOffset(callback);
 };
+
 module.exports = Auth;
