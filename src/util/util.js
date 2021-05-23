@@ -1,7 +1,7 @@
 'use strict'
 
 /**
- * 
+ * @param toCheck - string to verify type of
  */
 function typeOfStr (toCheck = null) {
   return typeof toCheck === 'string'
@@ -15,14 +15,17 @@ async function asyncTypeOfStr (toCheck = null) {
 }
 
 /**
- * 
+ * @param propertyName - string to match to key
+ * @param object - object whose keys we are validating
  */
 function objHasProperty (propertyName = '', object = {}) {
   return Object.prototype.hasOwnProperty.call(propertyName, object)
 }
 
 /**
- * 
+ * @param propertyNames - an Array of strings to loop over and check whether
+ * object has keys
+ * @param object - object whose keys we are validating
  */
 function objHasProperties (propertyNames = [], object = {}) {
   let hasAllProperties = false
