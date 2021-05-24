@@ -83,7 +83,19 @@ class BotManager extends Events {
 /**
  * 
  */
-BotManager.prototype.startWebServer = function startWebServer(trySSL = false) {
+async function startManager(callback = async () => {}) {
+  await this.startWebServer(true)
+
+  await this.AccountsManager.getAccounts(async function getAccountsCallback(error, accounts){
+    // for (const 
+  })
+}
+BotManager.prototype.startManager = startManager
+
+/**
+ * 
+ */
+async function startWebServer(trySSL = false) {
   const requiredProperties = ['ssl', 'api_port']
   const { config = {} } = this
 
@@ -134,5 +146,6 @@ BotManager.prototype.startWebServer = function startWebServer(trySSL = false) {
     }
   }
 }
+BotManager.prototype.startWebServer = startWebServer
 
 module.exports = BotManager

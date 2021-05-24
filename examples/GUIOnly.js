@@ -12,9 +12,6 @@ var BotManager = require('node-steam-bot-manager');
 var botsManager = new BotManager();// Create new instance of the BotManager
 
 function GUIOnly() {
-
-
-
     botsManager.startManager(function (err) {
         if (err)
             botsManager.errorDebug("Failed to start Bot Manager")
@@ -24,4 +21,5 @@ function GUIOnly() {
 
 new GUIOnly();// Run the code above.
 
+// why are you exporting GUIOnly
 module.exports = GUIOnly;
