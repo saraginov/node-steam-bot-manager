@@ -171,6 +171,109 @@ GUI_Handler.prototype.displayBotMenu = displayBotMenu
 /**
  * 
  */
+async function displayMenu(botAccount = null) {
+  // todo [] if botAccount is null, need to throw error
+}
+GUI_Handler.prototype.displayMenu = displayMenu
+
+/**
+ * 
+ */
+async function initTradeMenu(botAccount = null) {
+  // todo [] if botAccount is null, need to throw error
+
+}
+GUI_Handler.prototype.initTradeMenu = initTradeMenu
+
+/**
+ * 
+ */
+async function tradeMenu(botAccount = null, tradeMenuOption = null) {
+  // todo [] if botAccount || tradeMenuOptions are null, need to throw error
+  botAccount.Friends.getFriends( (err = null, friendsList = []) => {
+    if (err) {
+      await this.main.errorDebug(err.toString())
+      await this.displayMenu(botAccount)
+    } else {
+      const friendsUsernames = []
+      for (let i = 0; i < friendsList.length; i++) {
+        const {username = ''} = friendsList[i]
+        friendsUsernames.push(username)
+      }  
+      friendsList.unshift({username: 'Back'}) // add Back to first position
+
+      const tradeMenu = [
+        {
+          type: 'list',
+          name: 'tradeOption',
+          message: 'Who would you like to trade with?',
+          choices: friendsUsernames
+        }
+      ]
+
+      try {
+        const userInput = await inquirer.prompt(tradeMenu)
+        const { tradeOption = 0 } = userInput
+        const friendIndex = friendsUsernames.indexOf(tradeOption)
+
+        switch (friendIndex) {
+          case 0: // go back
+              await this.initTradeMenu(botAccount)
+            break;
+        
+          default: {
+              // open chat with partner and create trade with said partner
+              const partner = friendsList[friendIndex]
+              const {accountSid = ''} = partner
+              await botAccount.Trade.createOffer(accountSid, (err, currentOffer) => {
+                if (err) {
+                  await this.main.errorDebug('Failed to create trade offer due to ' + err)
+                  return await this.displayMenu(botAccount)
+                }
+
+                switch (tradeMenuOption) {
+                  case 0: {
+                    const appId = await this.main.getAppId()
+                    // todo [] what do 2 and true stand for?!
+                    await botAccount.getUserInventory(accountSid, appId, 2, true, (err, inv, curr) => {
+                      // inv stands for inventory, curr stands for currencies
+                      if (err) {
+                        // !important todo [] this is where i left of
+
+                      } else {
+
+                      }
+                    })
+                    break;
+                  }
+                    
+
+                  case 1:
+                    
+                    break;
+                
+                  default:
+                    // not sure about this loopy error handling...
+                    await this.tradeMenu(botAccount, tradeMenuOption)
+                    break;
+                }
+              })
+            }
+            break;
+        }
+      } catch (error) {
+        // todo [] find best way to handle error
+        await this.main.errorDebug(error)
+        throw error
+      }
+    }
+  })
+}
+GUI_Handler.prototype.displayBotMenu = tradeMenu
+
+/**
+ * 
+ */
 async function processChat(botAccount = null, target = null) {
   // todo [] improve error handling below
   if (botAccount === null || target === null) return
@@ -191,14 +294,14 @@ async function processChat(botAccount = null, target = null) {
 
     if (lowerCasedMsg === 'quit' || lowerCasedMsg === 'exit') {
       // todo [] what does null for setChatting mean?
-      botAccount.setChatting(null)
-      this.displayMenu(botAccount)
+      await botAccount.setChatting(null)
+      await this.displayMenu(botAccount)
     } else {
       await botAccount.Friends.sendMessage(target, message, (err) => {
         if (err) {
           await this.main.errorDebug('Error occurred when sending message')
         }
-        this.processChat(botAccount, target)
+        await this.processChat(botAccount, target)
       })
     }
   } catch (error) {
@@ -206,5 +309,6 @@ async function processChat(botAccount = null, target = null) {
     throw error
   }
 }
+GUI_Handler.prototype.processChat = processChat
 
 module.exports = GUI;

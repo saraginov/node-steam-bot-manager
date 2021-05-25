@@ -200,23 +200,23 @@ GUI_Handler.prototype.processChat = function (botAccount, target) {
     });
 };
 
-
 GUI_Handler.prototype.tradeMenu = function (botAccount, tradeMenuOption) {
     var self = this;
     botAccount.Friends.getFriends(function (err, friendsList) {
         if (err) {
             self.main.errorDebug(err.toString());
             self.displayMenu(botAccount);
-        }
-        else {
+        } else {
             friendsList.unshift({username: "Back"});// Add to first pos
             var nameList = [];
+            // friendId in friendsList doesn't make sense! because unshift is an array method
+            // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/unshift
+            // meaning friendId is the index...
             for (var friendId in friendsList) {
-                if (friendsList.hasOwnProperty(friendId)) {
+                if (friendsList.hasOwnProperty(friendId)) { // ... always true, check comment above
                     nameList.push(friendsList[friendId].username);
                 }
             }
-
             var tradeMenu = [
                 {
                     type: 'list',
@@ -225,6 +225,9 @@ GUI_Handler.prototype.tradeMenu = function (botAccount, tradeMenuOption) {
                     choices: nameList
                 }
             ];
+
+            // so if user inputs invalid option, does inquirer automatically take
+            // care of that or do we have to manually account for this scenario?
             inquirer.prompt(tradeMenu).then(function (result) {
                 var menuEntry = nameList.indexOf(result.tradeOption);
                 // We will open chat with...
@@ -250,8 +253,6 @@ GUI_Handler.prototype.tradeMenu = function (botAccount, tradeMenuOption) {
                                             self.displayMenu(botAccount);
                                         }
                                         else {
-
-
                                             if (inventory == null || inventory.length < 1) {
                                                 self.main.infoDebug("Other user has no items in inventory. Redirecting to menu...");
                                                 self.initTradeMenu(botAccount);
@@ -368,7 +369,6 @@ GUI_Handler.prototype.tradeMenu = function (botAccount, tradeMenuOption) {
                                     self.tradeMenu(botAccount, tradeMenuOption);
                                     break;
                             }
-
                         });
                         break;
                 }
@@ -409,6 +409,7 @@ GUI_Handler.prototype.initTradeMenu = function (botAccount) {
     });
 
 };
+
 GUI_Handler.prototype.displayMenu = function (botAccount) {
     var self = this;
     var menuOptions = [
@@ -665,6 +666,7 @@ GUI_Handler.prototype.displayMenu = function (botAccount) {
 
     });
 };
+
 /**
  * Start the two-factor-authentication process using the GUI
  * @param {BotAccount} botAccount - The bot chosen to enable two-factor authentication for.
@@ -785,7 +787,6 @@ GUI_Handler.prototype.enableTwoFactor = function (botAccount) {
     });
 };
 
-
 /**
  * Format the string based on arguments provided after the string
  * @returns {String}
@@ -799,7 +800,4 @@ String.prototype.format = function () {
     return content;
 };
 
-
 module.exports = GUI_Handler;
-
-
