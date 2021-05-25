@@ -37,15 +37,15 @@ GUI_Handler.prototype.displayBotMenu = function () {
     ];
     inquirer.prompt(botList).then(function (result) {
         switch (result.username) {
-
             case 'register':
                 var tempList = [];
-                if (botList.length > 0) {
+                // ????? botList is hardcoded above with a single object...
+                // why are you checking botList len?!
+                if (botList.length > 0) { 
                     tempList.push("create new steam account");
                     tempList.push(new inquirer.Separator());
                 }
                 tempList.push("import account");
-
                 var optionList = [
                     {
                         type: 'list',
@@ -55,49 +55,54 @@ GUI_Handler.prototype.displayBotMenu = function () {
                     }
                 ];
                 inquirer.prompt(optionList).then(function (result) {
-                    var accountQuestions = [
-                        {
-                            type: 'input',
-                            name: 'username',
-                            message: 'What\'s the bot username?'
-                        },
-                        {
-                            type: 'password',
-                            name: 'password',
-                            message: 'What\'s the bot password?'
-                        },
-                        {
-                            type: 'input',
-                            name: 'email',
-                            message: 'What\'s the email to register with?'
-                        }
-                    ];
                     switch (result.registerOption) {
                         case 'create new steam account':
+                            var accountQuestions = [
+                                {
+                                    type: 'input',
+                                    name: 'username',
+                                    message: 'What\'s the bot username?'
+                                },
+                                {
+                                    type: 'password',
+                                    name: 'password',
+                                    message: 'What\'s the bot password?'
+                                },
+                                {
+                                    type: 'input',
+                                    name: 'email',
+                                    message: 'What\'s the email to register with?'
+                                }
+                            ];
                             inquirer.prompt(accountQuestions).then(function (result) {
-                                if (result.username.length == 0 || result.password.length == 0 || result.email.length == 0 ){
+                                if (result.username.length == 0 
+                                    || result.password.length == 0 
+                                    || result.email.length == 0 )
+                                {
                                     self.displayBotMenu();
                                     self.main.errorDebug("One or more fields that are required are empty.");
-                                }
-                                else {
-                                    self.main.randomBot({}).createAccount(result.username, result.password,  result.email, function (eresult, steamid) {
-                                        if (eresult != EResult.OK) {
-                                            self.main.errorDebug("Failed to create account due to error: " + EResult[eresult]);
-                                            self.displayBotMenu();
-                                        }
-                                        else {
-                                            self.main.registerAccount(result.username, result.password, [], function (err) {
-                                                if (err)
-                                                    self.main.errorDebug("Invalid username/password, either edit data file or try to register again..");
-                                                else
-                                                    self.main.infoDebug("Successfully added new account to node-steam-bot-manager.");
+                                } else {
+                                    self.main.randomBot({}).createAccount(result.username,
+                                        result.password,  result.email,
+                                        function (eresult, steamid) {
+                                            if (eresult != EResult.OK) {
+                                                self.main.errorDebug("Failed to create account due to error: " + EResult[eresult]);
                                                 self.displayBotMenu();
+                                            } else {
+                                                self.main.registerAccount(result.username, result.password, [], 
+                                                    function (err) {
+                                                        if (err)
+                                                            self.main.errorDebug("Invalid username/password, either edit data file or try to register again..");
+                                                        else
+                                                            self.main.infoDebug("Successfully added new account to node-steam-bot-manager.");
+                                                        self.displayBotMenu();
                                             });
                                         }
                                     });
                                 }
                             });
                             break;
+
                         case 'import account':
                             accountQuestions = [
                                 {
@@ -141,6 +146,7 @@ GUI_Handler.prototype.displayBotMenu = function () {
                                         details.identity_secret = result.identity_secret;
                                     if (result.revocation.length > 0)
                                         details.revocation = result.revocation;
+                                    
                                     self.main.registerAccount(result.username, result.password, details, function (err) {
                                         self.displayBotMenu();
                                         if (err)
@@ -151,12 +157,11 @@ GUI_Handler.prototype.displayBotMenu = function () {
                             break;
                     }
                 });
-
-
                 break;
+
             case 'exit':
                 process.exit();
-                break;
+
             default:
                 self.main.findBot(result.username.split("\[")[0], function (err, accountDetails) {
                     // Check if bot is online or offline
@@ -169,8 +174,6 @@ GUI_Handler.prototype.displayBotMenu = function () {
                 });
                 break;
         }
-
-
     });
 };
 
@@ -183,12 +186,13 @@ GUI_Handler.prototype.processChat = function (botAccount, target) {
             name: 'message'
         }
     ];
-    inquirer.prompt(chatMessage).then(function (result) {
+    inquirer.prompt(chatMessage)
+    .then(function (result) {
         if (result.message.toLowerCase() == "quit" || result.message.toLowerCase() == "exit") {
             botAccount.setChatting(null);
             self.displayMenu(botAccount);
-        }
-        else {
+        } else {
+            // todo  why isn't err handled below?
             botAccount.Friends.sendMessage(target, result.message, function (err) {
                 self.processChat(botAccount, target);
             });

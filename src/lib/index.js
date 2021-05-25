@@ -1,21 +1,25 @@
 'use strict'
+
 // todo [] what does global do?
 // todo [] what is _mckay_statistics_opt_out?
-
 // https://github.com/DoctorMcKay/node-steamcommunity/issues/177
 global._mckay_statistics_opt_out = true
 // https://github.com/DoctorMcKay/node-stats-reporter#opting-out is no longer available
 // not sure whether _mckay_statistics_opt_out is still applicable
 // leaving it in for now, will look at it a later time
 
+// node_modules
 const Events = require('events')
 
+// todo [] - loggers
+
+// internal classes
 const FileManager = require('./FileManager.js')
 const ConfigManager = require('./ConfigManager.js')
 const AccountsManager = require('./AccountsManager.js')
 
+// utility functions
 const {
-  typeOfStr,
   objHasProperty,
   objHasProperties,
 } = require('../../util/util.js')
