@@ -251,8 +251,7 @@ GUI_Handler.prototype.tradeMenu = function (botAccount, tradeMenuOption) {
                                         if (err) {
                                             self.main.errorDebug("User does not have game - " + err);
                                             self.displayMenu(botAccount);
-                                        }
-                                        else {
+                                        } else {
                                             if (inventory == null || inventory.length < 1) {
                                                 self.main.infoDebug("Other user has no items in inventory. Redirecting to menu...");
                                                 self.initTradeMenu(botAccount);
@@ -261,23 +260,19 @@ GUI_Handler.prototype.tradeMenu = function (botAccount, tradeMenuOption) {
 
                                             var nameList = [];
                                             for (var id in inventory) {
+                                                // is inventory an object or an array?!
                                                 if (inventory.hasOwnProperty(id)) {
                                                     nameList.push(inventory[id].name);
                                                 }
                                             }
-
-
-                                            var tradeMenu = [
-                                                {
+                                            var tradeMenu = [{
                                                     type: 'checkbox',
                                                     name: 'tradeOption',
                                                     message: 'What would you like to take? (\'Enter\' to send trade)',
                                                     choices: nameList,
-                                                }
-
-                                            ];
+                                            }];
+                                            
                                             inquirer.prompt(tradeMenu).then(function (result) {
-
                                                 if (result.tradeOption.length > 0) {
                                                     for (var itemNameIndex in result.tradeOption) {
                                                         if (result.tradeOption.hasOwnProperty(itemNameIndex)) {
@@ -428,7 +423,6 @@ GUI_Handler.prototype.displayMenu = function (botAccount) {
         menuOptions[0] = "Chat [Disabled - missing 'api_key' in config]";
         menuOptions[1] = "Send trade offer [Disabled - missing 'api_key' in config]";
     }
-
 
     var mainMenu = [
         {

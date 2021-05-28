@@ -9,6 +9,7 @@ const EResult = require('../enums/EResult.js')
 // questions Array of Objects
 const registerQuestions = require('./registerAccountQuestions.js')
 const importQuestions = require('./importAccountQuestions.js')
+const InventoryBot = require('../../examples/InventoryBot.js')
 
 /**
  * Creates a new GUI_Handler instance.
@@ -235,23 +236,56 @@ async function tradeMenu(botAccount = null, tradeMenuOption = null) {
                   case 0: {
                     const appId = await this.main.getAppId()
                     // todo [] what do 2 and true stand for?!
-                    await botAccount.getUserInventory(accountSid, appId, 2, true, (err, inv, curr) => {
+                    await botAccount.getUserInventory(accountSid, appId, 2, true, (err, inv = null, curr) => {
                       // inv stands for inventory, curr stands for currencies
                       if (err) {
-                        // !important todo [] this is where i left of
-
+                        await this.main.errorDebug('User does not have game - ' + err)
+                        await this.displayMenu(botAccount)
                       } else {
+                        if (inv === null || inv.length < 1) {
+                          this.main.infoDebug('Other user has no items in inventory. Redirecting to menu...')
+                          this.initTradeMenu(botAccount)
+                          return
+                        }
+                        // I don't know what the nameList is
+                        const itemNames = []
+                        for (let i = 0; i < inv.length; i++) {
+                          const item = inv[i]
+                          const { name = 'Error - Name does not exist! '} = item
+                          itemNames.push(name)
+                        }
+                        const tradeMenu = [{
+                          type: 'checkbox',
+                          name: 'tradeOption',
+                          message: 'What would you like to take? (\'Enter\' to send trade)',
+                          choices: nameList,
+                        }]
 
+                        const userResponse = inquirer.prompt(tradeMenu)
+                        const {tradeOption = []} = userResponse
+                        
+                        if (tradeOption.length > 0) {
+                          for (let i = 0; i < tradeOption.length; i++) {
+                            // ! i don't what the fuck, this code is so spaghetti!
+                            // const name = tradeOption[i]
+                            // const itemToAdd = inv[i];
+                            // currentOffer.addTheirItem(
+                          }
+                          await currentOffer.setMessage('Manual offer triggered by Bot Manager.')
+                          await currentOffer.send(async ())
+                        } else {
+                          await this.tradeMenu(botAccount, tradeMenuOption)
+                        }
                       }
                     })
                     break;
                   }
-                    
 
-                  case 1:
-                    
+                  case 1: {
+
                     break;
-                
+                  }
+                                  
                   default:
                     // not sure about this loopy error handling...
                     await this.tradeMenu(botAccount, tradeMenuOption)
